@@ -1,0 +1,32 @@
+{
+  "name": "@walery/stencil-product-bucket",
+  "description": "Stencil blocks to determine and create product-bucket and related values",
+  "version": "0.0.0",
+  "devDependencies": {
+    "ava": "4.2.0",
+    "nyc": "15.1.0"
+  },
+  "files": [
+    "blocks/"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": "Walery Strauch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/walery/stencil-product-bucket/issues"
+  },
+  "homepage": "https://github.com/walery/stencil-product-bucket#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walery/stencil-product-bucket.git"
+  },
+  "scripts": {
+    "test": "nyc ava",
+    "test:coverageReport": "npm test && nyc report --reporter=html"
+  },
+  "@walery/serverless-plugin-stencil": {
+    "alias": "product-bucket"
+  }
+}
