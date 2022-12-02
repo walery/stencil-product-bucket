@@ -15,7 +15,7 @@ module.exports.resolve = ({serverless, variableUtils, slsHelper, logUtils}) => {
 
   const getBucketName = async (awsAccountDomainName) => {
     const product = await resolveVariable('self:custom.product');
-    return `${product}.${slsHelper.region}.${awsAccountDomainName}`;
+    return `${product}.${slsHelper.region}.${awsAccountDomainName}`.toLocaleLowerCase();
   };
 
   const isBucketCreationNecessary = (bucketName) => {
