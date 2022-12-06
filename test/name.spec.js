@@ -2,7 +2,7 @@ const test = require('ava');
 
 test.serial('should return bucket name if bucket exists and has correct configuration', async t => {
   const actual = await resolveName(t);
-  t.is(actual, 'testProduct.foo-central-42.test.foo.bar');
+  t.is(actual, 'test-product.foo-central-42.test.foo.bar');
 });
 
 test.serial('should throw serverless Error if custom.product is not set', async t => {
@@ -58,7 +58,7 @@ class TestError extends Error {
 
 const getDefaultVariableUtilsMock = (overwrites) => {
   const resolveVariableValues = {
-    'self:custom.product': Promise.resolve('testProduct'),
+    'self:custom.product': Promise.resolve('test-product'),
     'stencil(account):domain': Promise.resolve('test.foo.bar'),
   };
   Object.assign(resolveVariableValues, overwrites);
