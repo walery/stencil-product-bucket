@@ -2,21 +2,30 @@ const test = require('ava');
 
 test.serial('should return bucket name if bucket exists and has correct configuration', async t => {
   const actual = await resolveName(t);
-  t.is(actual, 'testProduct.foo-central-42.test.foo.bar');
+  t.is(actual, 'test-product.foo-central-42.test.foo.bar');
+});
+
+test.serial('should return bucket name if product has camelCase', async t => {
+  const mockOverwrites = {
+    variableUtilsOverwrites: {
+      'self:custom.product': Promise.resolve('camelCase'),
+    },
+  };
+
+  const actual = await resolveName(t, mockOverwrites);
+  t.is(actual, 'camelCase.foo-central-42.test.foo.bar');
 });
 
 test.serial('should throw serverless Error if custom.product is not set', async t => {
   const mockOverwrites = {
-    serverlessOverwrites: {
-      service: {
-        custom: {},
-      },
+    variableUtilsOverwrites: {
+      'self:custom.product': undefined,
     },
   };
 
-  const actual = t.throws(() => {
-    resolveName(t, mockOverwrites);
-  });
+  const actual = await t.throwsAsync(
+    resolveName(t, mockOverwrites)
+  );
   t.true(actual instanceof TestError);
   t.is(actual.message, 'To create product bucket you must provide `custom.product` property.');
 });
@@ -45,12 +54,6 @@ const createUncachedInstance = () => {
 
 const getDefaultServerlessMock = (overwrites) => {
   const serverlessMock = {
-    service: {
-      custom: {
-        product: 'testProduct',
-        component: 'testComponent',
-      },
-    },
     classes: {
       Error: TestError,
     },
@@ -64,14 +67,21 @@ class TestError extends Error {
   }
 }
 
-const getDefaultVariableUtilsMock = () => {
+const getDefaultVariableUtilsMock = (overwrites) => {
+  const resolveVariableValues = {
+    'self:custom.product': Promise.resolve('test-product'),
+    'stencil(account):domain': Promise.resolve('test.foo.bar'),
+  };
+  Object.assign(resolveVariableValues, overwrites);
+
   return {
     resolveVariable: (varialbleExpression) => {
-      switch(varialbleExpression) {
-        case 'self:custom.product': return Promise.resolve('testProduct');
-        case 'stencil(account):domain': return Promise.resolve('test.foo.bar');
-        defualt: throw Error(`Unknown variable expression '${varialbleExpression}'.`);
+      const potentiallyResolved = resolveVariableValues[varialbleExpression];
+      if (potentiallyResolved === undefined) {
+        return Promise.reject(new Error(`Unknown variable expression '${varialbleExpression}'.`));
       }
+
+      return potentiallyResolved;
     },
     serviceDir: '/foo/bar/',
   };
