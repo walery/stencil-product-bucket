@@ -12,6 +12,9 @@ test.serial('should throw serverless Error if custom.product is not set', async 
         custom: {},
       },
     },
+    variableUtilsOverwrites: {
+      'self:custom.product': undefined,
+    },
   };
 
   const actual = t.throws(() => {
@@ -64,14 +67,21 @@ class TestError extends Error {
   }
 }
 
-const getDefaultVariableUtilsMock = () => {
+const getDefaultVariableUtilsMock = (overwrites) => {
+  const resolveVariableValues = {
+    'self:custom.product': Promise.resolve('testProduct'),
+    'stencil(account):domain': Promise.resolve('test.foo.bar'),
+  };
+  Object.assign(resolveVariableValues, overwrites);
+
   return {
     resolveVariable: (varialbleExpression) => {
-      switch(varialbleExpression) {
-        case 'self:custom.product': return Promise.resolve('testProduct');
-        case 'stencil(account):domain': return Promise.resolve('test.foo.bar');
-        defualt: throw Error(`Unknown variable expression '${varialbleExpression}'.`);
+      const potentiallyResolved = resolveVariableValues[varialbleExpression];
+      if (potentiallyResolved === undefined) {
+        return Promise.reject(new Error(`Unknown variable expression '${varialbleExpression}'.`));
       }
+
+      return potentiallyResolved;
     },
     serviceDir: '/foo/bar/',
   };
