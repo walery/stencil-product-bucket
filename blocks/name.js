@@ -1,20 +1,21 @@
 let productBucket = null;
 
-module.exports.resolve = ({serverless, variableUtils, slsHelper, logUtils}) => {
+module.exports.resolve = async ({serverless, variableUtils, slsHelper, logUtils}) => {
   if (productBucket !== null) {
     return productBucket;
-  }
-
-  if (serverless.service.custom.product === undefined) {
-    throw new serverless.classes.Error('To create product bucket you must provide `custom.product` property.');
   }
 
   const {resolveVariable, serviceDir} = variableUtils;
   const {log} = logUtils;
   const s3 = slsHelper.createAwsClient('S3');
+  let product;
+  try {
+    product = await resolveVariable('self:custom.product');
+  } catch (e) {
+    throw new serverless.classes.Error('To create product bucket you must provide `custom.product` property.');
+  }
 
   const getBucketName = async (awsAccountDomainName) => {
-    const product = await resolveVariable('self:custom.product');
     return `${product}.${slsHelper.region}.${awsAccountDomainName}`;
   };
 

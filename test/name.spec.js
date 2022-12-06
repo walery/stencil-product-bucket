@@ -7,19 +7,14 @@ test.serial('should return bucket name if bucket exists and has correct configur
 
 test.serial('should throw serverless Error if custom.product is not set', async t => {
   const mockOverwrites = {
-    serverlessOverwrites: {
-      service: {
-        custom: {},
-      },
-    },
     variableUtilsOverwrites: {
       'self:custom.product': undefined,
     },
   };
 
-  const actual = t.throws(() => {
-    resolveName(t, mockOverwrites);
-  });
+  const actual = await t.throwsAsync(
+    resolveName(t, mockOverwrites)
+  );
   t.true(actual instanceof TestError);
   t.is(actual.message, 'To create product bucket you must provide `custom.product` property.');
 });
@@ -48,12 +43,6 @@ const createUncachedInstance = () => {
 
 const getDefaultServerlessMock = (overwrites) => {
   const serverlessMock = {
-    service: {
-      custom: {
-        product: 'testProduct',
-        component: 'testComponent',
-      },
-    },
     classes: {
       Error: TestError,
     },

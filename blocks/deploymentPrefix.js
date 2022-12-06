@@ -5,11 +5,12 @@ module.exports.resolve = async ({serverless, variableUtils, slsHelper}) => {
     return deploymentPrefix;
   }
 
-  if (serverless.service.custom.component === undefined) {
+  let component;
+  try {
+    component = await variableUtils.resolveVariable('self:custom.component');
+  } catch () {
     throw new serverless.classes.Error('To create deploymentPrefix you must provide `custom.component` property.');
   }
-
-  const component = await variableUtils.resolveVariable('self:custom.component');
 
   deploymentPrefix = `${slsHelper.env}/${component}/serverless`;
   return deploymentPrefix;
