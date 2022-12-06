@@ -5,6 +5,17 @@ test.serial('should return bucket name if bucket exists and has correct configur
   t.is(actual, 'test-product.foo-central-42.test.foo.bar');
 });
 
+test.serial('should return bucket name if product has camelCase', async t => {
+  const mockOverwrites = {
+    variableUtilsOverwrites: {
+      'self:custom.product': Promise.resolve('camelCase'),
+    },
+  };
+
+  const actual = await resolveName(t, mockOverwrites);
+  t.is(actual, 'camelCase.foo-central-42.test.foo.bar');
+});
+
 test.serial('should throw serverless Error if custom.product is not set', async t => {
   const mockOverwrites = {
     variableUtilsOverwrites: {
