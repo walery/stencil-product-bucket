@@ -4,7 +4,8 @@
   "version": "0.0.3-SNAPSHOT.0",
   "devDependencies": {
     "ava": "5.1.0",
-    "nyc": "15.1.0"
+    "nyc": "15.1.0",
+    "xo": "0.53.1"
   },
   "files": [
     "blocks/"
@@ -25,6 +26,9 @@
   "scripts": {
     "test": "nyc ava",
     "test:coverageReport": "npm test && nyc report --reporter=html"
+  },
+  "xo": {
+    "space": true
   },
   "@walery/serverless-plugin-stencil": {
     "alias": "product-bucket"
