@@ -8,7 +8,7 @@ module.exports.resolve = async ({serverless, variableUtils, slsHelper}) => {
   let component;
   try {
     component = await variableUtils.resolveVariable('self:custom.component');
-  } catch () {
+  } catch {
     throw new serverless.classes.Error('To create deploymentPrefix you must provide `custom.component` property.');
   }
 

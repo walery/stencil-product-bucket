@@ -24,7 +24,7 @@ test.serial('should throw serverless Error if custom.product is not set', async 
   };
 
   const actual = await t.throwsAsync(
-    resolveName(t, mockOverwrites)
+    resolveName(t, mockOverwrites),
   );
   t.true(actual instanceof TestError);
   t.is(actual.message, 'To create product bucket you must provide `custom.product` property.');
@@ -47,12 +47,11 @@ const resolveName = (t, overwrites = {}) => {
 };
 
 const createUncachedInstance = () => {
-  delete require.cache[require.resolve('../blocks/name')]
+  delete require.cache[require.resolve('../blocks/name')];
   return require('../blocks/name');
 };
 
-
-const getDefaultServerlessMock = (overwrites) => {
+const getDefaultServerlessMock = overwrites => {
   const serverlessMock = {
     classes: {
       Error: TestError,
@@ -61,13 +60,9 @@ const getDefaultServerlessMock = (overwrites) => {
   return Object.assign(serverlessMock, overwrites);
 };
 
-class TestError extends Error {
-  constructor(message) {
-    super(message);
-  }
-}
+class TestError extends Error {}
 
-const getDefaultVariableUtilsMock = (overwrites) => {
+const getDefaultVariableUtilsMock = overwrites => {
   const resolveVariableValues = {
     'self:custom.product': Promise.resolve('test-product'),
     'stencil(account):domain': Promise.resolve('test.foo.bar'),
@@ -75,7 +70,7 @@ const getDefaultVariableUtilsMock = (overwrites) => {
   Object.assign(resolveVariableValues, overwrites);
 
   return {
-    resolveVariable: (varialbleExpression) => {
+    resolveVariable(varialbleExpression) {
       const potentiallyResolved = resolveVariableValues[varialbleExpression];
       if (potentiallyResolved === undefined) {
         return Promise.reject(new Error(`Unknown variable expression '${varialbleExpression}'.`));
@@ -89,8 +84,8 @@ const getDefaultVariableUtilsMock = (overwrites) => {
 
 const getDefaultSlsHelperMock = (overwrites, t) => {
   const slsHelperMock = {
-    createAwsClient: (service) => {
-      t.is(service, 'S3')
+    createAwsClient(service) {
+      t.is(service, 'S3');
       return s3ClientMock;
     },
     region: 'foo-central-42',
@@ -99,12 +94,12 @@ const getDefaultSlsHelperMock = (overwrites, t) => {
 };
 
 const s3ClientMock = {
-  headBucket: () => {
+  headBucket() {
     return {
       promise: () => Promise.resolve({}),
     };
   },
-  getPublicAccessBlock: () => {
+  getPublicAccessBlock() {
     return {
       promise: () => Promise.resolve({
         PublicAccessBlockConfiguration: {
@@ -118,11 +113,11 @@ const s3ClientMock = {
   },
 };
 
-const getDefaultLogUtilsMock = (overwrites) => {
+const getDefaultLogUtilsMock = overwrites => {
   const logUtilsMock = {
     log: {
-      warning: (message) => {
-        // nothing
+      warning() {
+        // Nothing
       },
     },
   };
