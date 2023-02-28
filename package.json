@@ -1,7 +1,7 @@
 {
   "name": "@walery/stencil-product-bucket",
   "description": "Stencil blocks to determine and create product-bucket and related values",
-  "version": "0.0.3-SNAPSHOT.0",
+  "version": "0.0.4-SNAPSHOT.0",
   "devDependencies": {
     "ava": "5.2.0",
     "nyc": "15.1.0",
